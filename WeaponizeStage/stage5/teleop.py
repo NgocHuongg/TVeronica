@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""TVeronica Stage 5 - Telegram C2 operator console (authorized red team lab only).
+"""TVeronica Stage 5 - Telegram C2 operator console.
 
 Usage:
     python3 teleop.py

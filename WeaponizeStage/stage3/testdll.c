@@ -1,4 +1,4 @@
-/* testdll.c - TVeronica lab: probe-only test DLL (NO C2 code).
+/* testdll.c - TVeronica: probe-only test DLL (NO C2 code).
    Purpose: verify Stage 3-4 mechanics (NTFS ADS load + mavinject injection + rundll32 entry)
    without the network beacon that Defender ML flags (Trojan:Win32/Wacatac.H!ml).
    DllMain writes %TEMP%\tver_inject_ok.txt ; exported Start writes %TEMP%\tver_backdoor_ok.txt. */

